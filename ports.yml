@@ -1,0 +1,5 @@
+config: 8888
+discovery: 8761
+gateway: 8080
+user: 8280
+order: 8290
