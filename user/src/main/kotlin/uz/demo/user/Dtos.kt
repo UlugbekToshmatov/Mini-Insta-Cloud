@@ -32,7 +32,7 @@ data class CreateUserDto(
     @NotEmpty(message = "Please provide your gender")
     val gender: String
 ) {
-    fun toEntity() = User(firstName, lastName, birthDate, password, phone, email, Gender.valueOf(gender))
+    fun toEntity() = User(firstName, lastName, birthDate, password, "+998 $phone", email, Gender.valueOf(gender))
 }
 
 data class UpdateUserDto(
