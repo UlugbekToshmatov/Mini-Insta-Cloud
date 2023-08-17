@@ -25,7 +25,7 @@ interface UserService {
 interface PostService {
     fun create(dto: CreatePostDto)
     fun getById(id: Long): PostDto
-    fun getNewPosts(userId: Long, page: Int, size: Int): Page<PostDto>
+    fun getNewPosts(userId: Long, pageable: Pageable): Page<PostDto>
     fun update(userId: Long, postId: Long, dto: UpdatePostDto)
     fun delete(id: Long)
     fun likePost(userId: Long, postId: Long)
@@ -59,10 +59,8 @@ class PostServiceImpl(
         } ?: throw PostNotFoundException(id)
 
     @Transactional
-    override fun getNewPosts(userId: Long, page: Int, size: Int): Page<PostDto> {
+    override fun getNewPosts(userId: Long, pageable: Pageable): Page<PostDto> {
         userService.getUserById(userId).run {
-            // Here page of pageable is highly likely to be equal to only 0 (always page=0)
-            val pageable: Pageable = PageRequest.of(page, size)
             return viewPostRepository.getViewPostsByUserIdAndViewedFalseAndPostDeletedFalse(userId, pageable).map {
                 it.viewed = true
                 viewPostRepository.save(it)

@@ -45,7 +45,14 @@ class BaseRepositoryImpl<T : BaseEntity>(
 
 interface UserRepository : BaseRepository<User> {
     fun existsByIdAndDeletedFalse(id: Long): Boolean
-    fun existsByPhoneOrEmail(phone: String?, email: String?): Boolean
+    @Query("""select u from users as u
+                    where (u.phone=?1 and u.email is null) 
+                    or (u.phone is null and u.email=?2) 
+                    or (u.phone=?1 and u.email=?2)
+           """)
+    fun getByPhoneOrEmail(phone: String?, email: String?): User?
+    fun findByPhone(phone: String): User?
+    fun findByEmail(email: String): User?
 }
 
 interface SubscriptionRepository : BaseRepository<Subscription> {

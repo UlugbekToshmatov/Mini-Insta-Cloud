@@ -1,6 +1,7 @@
 package uz.demo.post
 
 import org.springframework.context.support.ResourceBundleMessageSource
+import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -13,11 +14,11 @@ class ExceptionHandlers(
     fun handleException(exception: PostServiceException): ResponseEntity<*> {
         return when (exception) {
             is UserNotFoundException -> ResponseEntity.badRequest().body(
-                exception.getErrorMessage(errorMessageSource, emptyArray<Any>())
+                exception.getErrorMessage(errorMessageSource, exception.id)
             )
 
             is PostNotFoundException -> ResponseEntity.badRequest().body(
-                exception.getErrorMessage(errorMessageSource, emptyArray<Any>())
+                exception.getErrorMessage(errorMessageSource, exception.id)
             )
         }
     }
@@ -25,6 +26,7 @@ class ExceptionHandlers(
 
 
 @RestController
+//@RequestMapping("api/v1/post")
 class PostController(private val service: PostService) {
     @PostMapping
     fun create(@Validated @RequestBody dto: CreatePostDto) = service.create(dto)
@@ -33,7 +35,7 @@ class PostController(private val service: PostService) {
     fun getById(@PathVariable(value = "id") postId: Long) = service.getById(postId)
 
     @GetMapping("/unread-posts/{userId}")
-    fun getUnreadPosts(@PathVariable userId: Long, page: Int, size: Int) = service.getNewPosts(userId, page, size)
+    fun getUnreadPosts(@PathVariable userId: Long, pageable: Pageable) = service.getNewPosts(userId, pageable)
 
     @PutMapping
     fun update(@RequestParam userId: Long, @RequestParam postId: Long, @Validated @RequestBody dto: UpdatePostDto) =

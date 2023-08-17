@@ -21,8 +21,18 @@ class UserServiceImpl(
 ) : UserService {
     override fun create(dto: CreateUserDto) {
         dto.run {
-            if (userRepository.existsByPhoneOrEmail(phone, email)) throw UserAlreadyExistsException()
+            if (phone == null && email == null)
+                throw BothPhoneAndEmailNullException()
+
+            phone?.let { userRepository.findByPhone("+998 $it")?.run { throw UserAlreadyExistsException("+998 $it") } }
+            email?.let { userRepository.findByEmail(it)?.run { throw UserAlreadyExistsException(it) } }
+
+            // After checking both phone and email for uniqueness, we can save data
             userRepository.save(dto.toEntity())
+
+            // Following code would not work for non-existing phone num. with existing email input
+//            userRepository.getByPhoneOrEmail("+998 $phone", email)?.let { throw UserAlreadyExistsException() }
+//                ?: userRepository.save(dto.toEntity())
         }
     }
 

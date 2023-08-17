@@ -24,7 +24,7 @@ class User(
     @Column(name = "last_name", length = 128) var lastName: String?,
     @Column(name = "birth_date", nullable = false) var birthDate: Date,
     @Column(length = 128, nullable = false) var password: String,
-    @Column(length = 13, unique = true) val phone: String?,
+    @Column(length = 17, unique = true) val phone: String?,
     @Column(unique = true) val email: String?,
     @Enumerated(value = EnumType.STRING) var gender: Gender
 ) : BaseEntity()
